@@ -26,17 +26,10 @@ A local, no-cloud tool that compares photos of the same outdoor spot taken on di
 
 
 
-\## Findings
+## Findings
 
-\## Findings
-
-\- It reliably picks up overall brightness and warmth: when I flipped the photo order, its claims flipped with it.
-
-\- It missed that the camera framing differed (it said "skyline remains consistent" while the foreground changed completely), and \[new run: did it now report framing\_differs correctly? yes/no].
-
-\- In my first prompt it invented shadows in silhouette scenes; after I removed shadows from the prompt, \[new run: still invented anything? what?].
-
-\- It trusts the labels you give it: a placeholder "EDIT TIME" ended up in its output as if it were a real time.
-
-\- About 60-65 seconds per comparison on a CPU-only laptop (Intel i7, no GPU), all local, nothing leaves the machine.
+- Brightness and warmth: often right, but not always (it once called the 9 Sept sky more orange, which was wrong).
+- Framing: after the prompt fix it notices the framing differs in every run, but understates it ("slightly different").
+- Position bias: in one pair it said "more clouds in Image 1" in both directions.
+- I scored 19 claims by hand: 11 correct, 5 debatable, 3 wrong.
 
