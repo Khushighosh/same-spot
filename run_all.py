@@ -1,7 +1,6 @@
 import ollama, json, io, time, sqlite3, html
 from PIL import Image
 
-# EDIT: photos in time order (earliest first), with the real time each was taken
 PHOTOS = [("p1.jpg", "9 Sept, 6:37 PM"), ("p2.jpg", "16 Sept, 6:00 PM"), ("p3.jpg", "19 Sept, 6:15 PM")]
 
 def small(path, max_side=896):
@@ -12,7 +11,7 @@ def small(path, max_side=896):
     return buf.getvalue()
 
 def compare(a, b, la, lb):
-            prompt = (
+    prompt = (
         f"These are two photos from the same terrace, taken on different evenings. "
         f"Image 1: {la}. Image 2: {lb}. Sunset is around 6:10 PM, so brightness differences "
         "may just reflect the time relative to sunset. First say whether the camera angle "
@@ -31,7 +30,7 @@ def compare(a, b, la, lb):
     try:
         res = json.loads(resp["message"]["content"])
     except Exception:
-        res = {"changes": [], "unchanged": [], "uncertain": ["model returned invalid JSON"]}
+        res = {"framing_differs": "", "changes": [], "uncertain": ["model returned invalid JSON"]}
     return res, time.time() - start
 
 db = sqlite3.connect("fieldnotes.db")
@@ -62,8 +61,10 @@ for (a, la, b, lb), runs in results.items():
     page.append(f"<img src='{a}'> <img src='{b}'><div class='cols'>")
     for direction in ("forward", "reverse"):
         res, secs = runs[direction]
-        page.append(f"<div><h3>{direction} ({secs:.0f}s)</h3><b>Changes</b><ul>{items(res,'changes')}</ul>"
-                    f"<b>Unchanged</b><ul>{items(res,'unchanged')}</ul>"
+        framing = html.escape(str(res.get("framing_differs", "")))
+        page.append(f"<div><h3>{direction} ({secs:.0f}s)</h3>"
+                    f"<b>Framing</b><p>{framing}</p>"
+                    f"<b>Changes</b><ul>{items(res,'changes')}</ul>"
                     f"<b>Uncertain</b><ul>{items(res,'uncertain')}</ul></div>")
     page.append("</div>")
 page.append("</body></html>")
